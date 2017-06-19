@@ -78,7 +78,7 @@ class User extends Authenticatable
      */
     public function followed($question)
     {
-        return $this->follows()->where('question_id',$question)->count();
+        return !! $this->follows()->where('question_id',$question)->count();
     }
 
     public function followers()
@@ -95,6 +95,25 @@ class User extends Authenticatable
     {
         return $this->followers()->toggle($user);
     }
+
+    public function votes()
+    {
+        return $this->belongsToMany(Answer::class, 'votes');
+    }
+
+    public function voteFor($answer)
+    {
+        return $this->votes()->toggle($answer);
+    }
+
+    public function hasVotedFor($answer)
+    {
+        return !! $this->votes()->where('answer_id',$answer)->count();
+    }
+
+
+
+
     /**
      * @param string $token
      */
@@ -102,4 +121,5 @@ class User extends Authenticatable
     {
         (new UserMailer())->passwordReset($this->email,$token);
     }
+
 }
